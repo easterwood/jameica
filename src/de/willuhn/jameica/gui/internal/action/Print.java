@@ -10,6 +10,8 @@
 
 package de.willuhn.jameica.gui.internal.action;
 
+import org.eclipse.nebula.paperclips.core.PaperClips;
+import org.eclipse.nebula.paperclips.core.PrintJob;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.printing.PrintDialog;
 import org.eclipse.swt.printing.PrinterData;
@@ -22,8 +24,6 @@ import de.willuhn.jameica.print.PrintSupport;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import net.sf.paperclips.PaperClips;
-import net.sf.paperclips.PrintJob;
 
 /**
  * Aktion zum Drucken von Daten.

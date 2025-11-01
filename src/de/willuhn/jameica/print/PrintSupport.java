@@ -10,8 +10,8 @@
 
 package de.willuhn.jameica.print;
 
-import net.sf.paperclips.PrintJob;
 import de.willuhn.util.ApplicationException;
+import org.eclipse.nebula.paperclips.core.PrintJob;
 
 /**
  * Generisches Interface zur Erzeugung von Druck-Jobs.
