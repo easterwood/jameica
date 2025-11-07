@@ -4,28 +4,47 @@
  * This generated file contains a sample Java application project to get you started.
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/9.1.0/userguide/building_java_projects.html in the Gradle documentation.
  */
-
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
-    id 'application'
+    id 'java-library'
+    id 'net.nemerosa.versioning' version '2.6.1'
 }
 
-repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
-    ivy {
-        url 'https://archive.eclipse.org'
-        layout 'maven'
-        patternLayout {
-            artifact '/[organisation]/releases/3.1.1/plugins/[artifact]_[revision].[ext]'
+version = '2.13.0-nightly'
+
+var username = System.getProperty('user.name')
+var timestamp = (() -> new Date().format('yyyyMMdd'))()
+var createdBy = "Gradle ${gradle.gradleVersion}"
+var buildJdk = "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})"
+var buildOs = "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+
+var jarName = project.name
+var jarNmeWin64 = "${jarName}-win64.jar"
+var jarNameMacos64 = "${jarName}-macos64.jar"
+var jarNameMacosAarch64 = "${jarName}-aarch64.jar"
+var jarNameLinux64 = "${jarName}-linux64.jar"
+var jarNameLinuxArm64 = "${jarName}-linuxarm64.jar"
+var jarNameOpenbsd = "${jarName}-openbsd.jar"
+// Add additional source sets to defaults
+// Could be necessary when changing source/resource locations to java defaults
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
         }
-        // https://archive.eclipse.org/nebula/releases/3.1.1/plugins/org.eclipse.nebula.paperclips.core_2.1.0.202402011804.jar
-        // This is required in Gradle 6.0+ as metadata file (ivy.xml)
-        // is mandatory. Docs linked below this code section
-        metadataSources { artifact() }
+        resources {
+            srcDirs 'src'
+        }
+    }
+
+    test {
+        java {
+            srcDirs 'test'
+        }
     }
 }
 
+layout.buildDirectory = 'target'
 
 dependencies {
     // Use JUnit test framework.
@@ -72,32 +91,54 @@ dependencies {
     implementation 'org.eclipse.platform:org.eclipse.jface:3.28.0'
 }
 
-// Apply a specific Java toolchain to ease working on different environments.
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src']
-        }
-    }
-
-    test {
-        java {
-            srcDirs = ['test']
-        }
-    }
-}
-
-compileJava.options.encoding = 'ISO-8859-1'
 java {
+    withSourcesJar()
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
 compileJava {
     options.release = 11
+    options.encoding = 'ISO-8859-1'
+    options.debug = true
+    options.debugOptions {
+        debugLevel = 'lines,vars,source'
+    }
 }
 
-application {
-    // Define the main class for the application.
-    mainClass = 'de.willuhn.jameica.Main'
+sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+jar {
+    manifest {
+        attributes (
+                'Built-By': username,
+                'Built-Date': timestamp,
+                'Build-Revision' : versioning.info.commit,
+                'Created-By': createdBy,
+                'Build-JDK': buildJdk,
+                'Build-OS': buildOs,
+                'Implementation-Title': project.name,
+                'Implementation-Version': version
+        )
+    }
+}
+
+tasks.named('assemble') {
+    dependsOn tasks.platformJar
+}
+
+tasks.register('platformJar', Jar) {
+    group 'build'
+    dependsOn tasks.jar
+    archiveBaseName = 'test'
+    //Project directory
+    from './src' //Current directory
+
+    //Gradle generated file storage(build directory)Or
+    // .Don't include hidden directories such as gradle in your ZIP file
+    excludes = ['build', '.*']
+}
+

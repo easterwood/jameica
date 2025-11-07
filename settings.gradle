@@ -1,0 +1,19 @@
+rootProject.name = 'jameica'
+dependencyResolutionManagement {
+    repositories {
+        // Use Maven Central for resolving dependencies.
+        mavenCentral()
+        ivy {
+            url 'https://archive.eclipse.org'
+            layout 'maven'
+            patternLayout {
+                artifact '/[organisation]/releases/3.1.1/plugins/[artifact]_[revision].[ext]'
+            }
+            // https://archive.eclipse.org/nebula/releases/3.1.1/plugins/org.eclipse.nebula.paperclips.core_2.1.0.202402011804.jar
+            // This is required in Gradle 6.0+ as metadata file (ivy.xml)
+            // is mandatory. Docs linked below this code section
+            metadataSources { artifact() }
+        }
+    }
+}
+
